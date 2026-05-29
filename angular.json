@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "mefinance-angular": {
+      "projectType": "application",
+      "schematics": {"@schematics/angular:component": {"style": "scss"}},
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/mefinance-angular",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": ["src/favicon.ico", "src/assets"],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {"budgets": [{"type": "initial", "maximumWarning": "600kb", "maximumError": "1mb"}], "outputHashing": "all"},
+            "development": {"optimization": false, "extractLicenses": false, "sourceMap": true}
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {"builder": "@angular-devkit/build-angular:dev-server", "configurations": {"production": {"buildTarget": "mefinance-angular:build:production"}, "development": {"buildTarget": "mefinance-angular:build:development"}}, "defaultConfiguration": "development"}
+      }
+    }
+  },
+  "cli": {
+    "analytics": "e21b5c59-422c-4fd6-a5c6-81455ce49621"
+  }
+}
