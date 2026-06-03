@@ -37,21 +37,27 @@ export class GastoService {
         return this.http.get<ResumoGastos>(this.baseUrl, { params });
     }
 
-    listar(page = 0, size = 20, termo = ''): Observable<Page<Gasto>> {
-        const usuarioId = this.getUsuarioId();
-
+    listar(
+        page = 0,
+        size = 20,
+        termo = '',
+        periodo?: number | null
+    ): Observable<Page<Gasto> | Gasto[]> {
         let params = new HttpParams()
-            .set('usuarioId', usuarioId)
             .set('page', page)
-            .set('size', size);
+            .set('size', size)
+            .set('usuarioId', this.getUsuarioId());
+
+        if (periodo) {
+            params = params.set('periodo', periodo);
+        }
 
         if (termo.trim()) {
             params = params.set('descricao', termo.trim());
-
-            return this.http.get<Page<Gasto>>(`${this.baseUrl}/filtrados`, { params });
+            return this.http.get<Page<Gasto> | Gasto[]>(`${this.baseUrl}/filtrados`, { params });
         }
 
-        return this.http.get<Page<Gasto>>(`${this.baseUrl}/todos`, { params });
+        return this.http.get<Page<Gasto> | Gasto[]>(`${this.baseUrl}/todos`, { params });
     }
 
     criar(gasto: Gasto): Observable<Gasto> {

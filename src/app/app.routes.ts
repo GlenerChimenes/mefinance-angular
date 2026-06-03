@@ -4,9 +4,11 @@ import { LoginComponent } from './pages/login/login.component';
 import { ShellComponent } from './layout/shell.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { ExpensesComponent } from './pages/expenses/expenses.component';
+import { RegisterComponent } from './pages/register/register.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'cadastro', component: RegisterComponent },
   {
     path: '',
     component: ShellComponent,

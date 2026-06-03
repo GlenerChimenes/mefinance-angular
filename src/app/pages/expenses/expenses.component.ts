@@ -5,6 +5,7 @@ import { Gasto } from '../../core/models/gasto.models';
 import { GastoService } from '../../core/services/gasto.service';
 import { CategoriaService } from '../../core/services/categoria.service';
 import { Categoria } from '../../core/models/gasto.models';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-expenses',
@@ -29,7 +30,14 @@ import { Categoria } from '../../core/models/gasto.models';
         </div>
           <div class="field">
               <label>Valor</label>
-              <input formControlName="valor" type="number" step="0.01" placeholder="0,00">
+              <input
+                      type="text"
+                      [value]="valorFormatado()"
+                      placeholder="R$ 0,00"
+                      inputmode="decimal"
+                      (input)="aoDigitarValor($event)"
+                      (blur)="formatarValorNoCampo()"
+              >
 
               @if (form.controls.valor.touched && form.controls.valor.hasError('required')) {
                   <small class="field-error">Valor é obrigatório.</small>
@@ -133,7 +141,7 @@ import { Categoria } from '../../core/models/gasto.models';
             </b>
           </span>
 
-                            <span class="money">{{ gasto.valor | currency:'BRL' }}</span>
+                            <span class="money">{{ gasto.valor | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</span>
 
                             <span class="row-actions">
               @if (gasto.situacao !== 'PAGO') {
@@ -319,6 +327,7 @@ export class ExpensesComponent implements OnInit {
   private readonly gastoService = inject(GastoService);
   private readonly fb = inject(FormBuilder);
   private readonly categoriaService = inject(CategoriaService); categorias = signal<Categoria[]>([]);
+  private readonly route = inject(ActivatedRoute);
   gastos = signal<Gasto[]>([]);
   filtro = signal('');
   loading = signal(false);
@@ -326,6 +335,7 @@ export class ExpensesComponent implements OnInit {
   erro = signal('');
   editandoId = signal<number | null>(null);
 
+  periodoFiltro = signal<number | null>(null);
 
   gastosFiltrados = computed(() => {
     const termo = this.filtro().toLowerCase().trim();
@@ -365,21 +375,23 @@ export class ExpensesComponent implements OnInit {
 
     ngOnInit(): void {
         this.carregarCategorias();
-        this.carregar();
+
+        this.route.queryParamMap.subscribe(params => {
+            const periodo = params.get('periodo');
+
+            this.periodoFiltro.set(periodo ? Number(periodo) : null);
+            this.carregar();
+        });
     }
 
     carregar(): void {
         this.loading.set(true);
 
-        this.gastoService.listar(0, 100).subscribe({
+        this.gastoService.listar(0, 100, this.filtro(), this.periodoFiltro()).subscribe({
             next: result => {
-                console.log('RETORNO LISTAR GASTOS:', result);
-
                 const gastos = Array.isArray(result)
                     ? result
                     : result?.content ?? [];
-
-                console.log('PRIMEIRO GASTO:', gastos[0]);
 
                 this.gastos.set(gastos);
             },
@@ -405,6 +417,7 @@ export class ExpensesComponent implements OnInit {
 
         const payload = {
             ...formValue,
+            valor: Number(formValue.valor),
             dataVencimento: this.formatarDataVencimentoParaBackend(formValue.dataVencimento),
             dataPagamento: this.formatarDataPagamentoParaBackend(formValue.dataPagamento)
         } as Gasto;
@@ -445,6 +458,8 @@ export class ExpensesComponent implements OnInit {
             situacao: gasto.situacao,
             idCategoria: gasto.idCategoria ?? 0
         });
+
+        this.valorFormatado.set(this.formatarMoeda(Number(gasto.valor ?? 0)));
     }
 
   excluir(gasto: Gasto): void {
@@ -508,8 +523,46 @@ export class ExpensesComponent implements OnInit {
             idCategoria: 0
         });
 
+        this.valorFormatado.set('');
         this.salvando.set(false);
     }
+
+    aoDigitarValor(event: Event): void {
+        const input = event.target as HTMLInputElement;
+
+        let valor = input.value.replace(/\D/g, '');
+
+        if (!valor) {
+            this.form.controls.valor.setValue(0);
+            this.valorFormatado.set('');
+            return;
+        }
+
+        const valorNumerico = Number(valor) / 100;
+
+        this.form.controls.valor.setValue(valorNumerico);
+        this.valorFormatado.set(this.formatarMoeda(valorNumerico));
+    }
+
+    formatarValorNoCampo(): void {
+        const valor = this.form.controls.valor.value;
+
+        if (!valor || valor <= 0) {
+            this.valorFormatado.set('');
+            return;
+        }
+
+        this.valorFormatado.set(this.formatarMoeda(valor));
+    }
+
+    private formatarMoeda(valor: number): string {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(valor);
+    }
+
+    valorFormatado = signal('');
 
     carregarCategorias(): void {
         this.categoriaService.listar().subscribe({
