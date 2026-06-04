@@ -53,29 +53,39 @@ import { GastoService } from '../../core/services/gasto.service';
       </form>
 
       <section class="results-area">
+          @if (todosPagos()) {
+              <section class="paid-alert">
+                  <div class="paid-alert-icon">✓</div>
+
+                  <div>
+                      <strong>Todos os gastos do {{ periodoFormatado() }} foram pagos.</strong>
+                      <span>Não existem despesas pendentes nos resultados filtrados.</span>
+                  </div>
+              </section>
+          }    
         <section class="summary-grid">
-          <article class="card kpi">
+          <article class="card kpi" [class.kpi-success]="todosPagos()">
             <span>Total filtrado</span>
             <strong>{{ totalFiltrado() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
             <small>Soma dos gastos exibidos</small>
           </article>
 
-          <article class="card kpi">
-            <span>Registros</span>
-            <strong>{{ gastosFiltrados().length }}</strong>
-            <small>Gastos encontrados</small>
-          </article>
-
-          <article class="card kpi">
+          <article class="card kpi" [class.kpi-success]="todosPagos()">
             <span>Pago</span>
             <strong>{{ totalPago() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
             <small>Despesas pagas</small>
           </article>
 
-          <article class="card kpi">
+          <article class="card kpi" [class.kpi-success]="todosPagos()">
             <span>Pendente</span>
             <strong>{{ totalPendente() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
             <small>Despesas em aberto</small>
+          </article>
+
+          <article class="card kpi" [class.kpi-success]="todosPagos()">
+              <span>Registros</span>
+              <strong>{{ gastosFiltrados().length }}</strong>
+              <small>Gastos encontrados</small>
           </article>
         </section>
 
@@ -112,7 +122,7 @@ import { GastoService } from '../../core/services/gasto.service';
 
                   <span>{{ gasto.nomeCategoria || 'Sem categoria' }}</span>
 
-                  <span>{{ gasto.dataVencimento | date:'dd/MM/yyyy' }}</span>
+                  <span>{{ formatarData(gasto.dataVencimento) }}</span>
 
                   <span>
                     <b
@@ -137,6 +147,60 @@ import { GastoService } from '../../core/services/gasto.service';
     </section>
   `,
     styles: [`
+      .paid-alert {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px 20px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+        border: 1px solid #bbf7d0;
+        box-shadow: 0 18px 40px rgba(22, 163, 74, .12);
+        color: #14532d;
+      }
+
+      .paid-alert-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #16a34a, #22c55e);
+        color: white;
+        display: grid;
+        place-items: center;
+        font-size: 24px;
+        font-weight: 900;
+        flex: 0 0 auto;
+      }
+
+      .paid-alert strong {
+        display: block;
+        font-size: 17px;
+        margin-bottom: 4px;
+      }
+
+      .paid-alert span {
+        display: block;
+        color: #166534;
+        font-weight: 600;
+      }
+
+      .kpi-success {
+        background: linear-gradient(135deg, #f0fdf4, #ffffff);
+        border: 1px solid #bbf7d0;
+        box-shadow: 0 18px 45px rgba(22, 163, 74, .12);
+      }
+
+      .kpi-success span {
+        color: #15803d;
+      }
+
+      .kpi-success strong {
+        color: #14532d;
+      }
+
+      .kpi-success small {
+        color: #166534;
+      }
     .page-head {
       margin-bottom: 24px;
     }
@@ -364,6 +428,10 @@ export class ExpenseSearchComponent implements OnInit {
         );
     });
 
+    todosPagos = computed(() =>
+        this.gastosFiltrados().length > 0 && this.totalPendente() === 0
+    );
+
     totalFiltrado = computed(() =>
         this.gastosFiltrados()
             .reduce((acc, gasto) => acc + Number(gasto.valor || 0), 0)
@@ -425,6 +493,22 @@ export class ExpenseSearchComponent implements OnInit {
             ?? resumoAny.gastos
             ?? resumoAny.listaGastos
             ?? [];
+    }
+
+    formatarData(data?: string): string {
+        if (!data) {
+            return '-';
+        }
+
+        // Se já veio no formato dd/MM/yyyy, retorna como está
+        if (data.includes('/')) {
+            return data;
+        }
+
+        // Se veio no formato yyyy-MM-dd, converte para dd/MM/yyyy
+        const [ano, mes, dia] = data.slice(0, 10).split('-');
+
+        return `${dia}/${mes}/${ano}`;
     }
 
     private getMesAtualInput(): string {

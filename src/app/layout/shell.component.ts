@@ -23,6 +23,7 @@ import { SessionTimeoutService } from '../core/services/session-timeout.service'
                 <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
                 <a routerLink="/gastos" routerLinkActive="active">Gastos</a>
                 <a routerLink="/ver-gastos" routerLinkActive="active">Ver gastos</a>
+                <a routerLink="/replicar-gastos" routerLinkActive="active">Replicar gastos</a>
             </nav>
 
             <button class="btn btn-secondary" (click)="logout()">Sair</button>

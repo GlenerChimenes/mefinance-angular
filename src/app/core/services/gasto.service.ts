@@ -84,6 +84,14 @@ export class GastoService {
         });
     }
 
+    replicarGastos(periodoAtual: number, periodoReplicar: number): Observable<void> {
+        const params = new HttpParams()
+            .set('userId', this.getUsuarioId())
+            .set('periodoAtual', periodoAtual)
+            .set('periodoReplicar', periodoReplicar);
+
+        return this.http.get<void>(`${this.baseUrl}/replicar`, { params });
+    }
     excluir(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }
@@ -93,14 +101,5 @@ export class GastoService {
             .set('userId', this.getUsuarioId());
 
         return this.http.get<Gasto>(`${this.baseUrl}/pagarGasto/${id}`, { params });
-    }
-
-    replicarGastos(periodoAtual: number, periodoReplicar: number): Observable<void> {
-        const params = new HttpParams()
-            .set('userId', this.getUsuarioId())
-            .set('periodoAtual', periodoAtual)
-            .set('periodoReplicar', periodoReplicar);
-
-        return this.http.get<void>(`${this.baseUrl}/replicar`, { params });
     }
 }
