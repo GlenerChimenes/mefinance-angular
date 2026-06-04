@@ -68,6 +68,14 @@ export class GastoService {
         });
     }
 
+    resumoPorPeriodo(periodo: number): Observable<ResumoGastos> {
+        const params = new HttpParams()
+            .set('usuarioId', this.getUsuarioId())
+            .set('periodo', periodo);
+
+        return this.http.get<ResumoGastos>(this.baseUrl, { params });
+    }
+
     atualizar(id: number, gasto: Gasto): Observable<Gasto> {
         return this.http.put<Gasto>(`${this.baseUrl}/${id}`, {
             ...gasto,

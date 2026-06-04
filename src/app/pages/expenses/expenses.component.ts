@@ -617,8 +617,11 @@ export class ExpensesComponent implements OnInit {
 
         const formValue = this.form.getRawValue();
 
+        const periodo = this.getPeriodoPorDataVencimento(formValue.dataVencimento);
+
         const payload = {
             ...formValue,
+            periodo,
             valor: Number(formValue.valor),
             dataVencimento: this.formatarDataVencimentoParaBackend(formValue.dataVencimento),
             dataPagamento: this.formatarDataPagamentoParaBackend(formValue.dataPagamento)
@@ -643,7 +646,6 @@ export class ExpensesComponent implements OnInit {
             }
         });
     }
-
     editar(gasto: Gasto): void {
         if (!gasto.id) {
             return;
@@ -846,6 +848,12 @@ export class ExpensesComponent implements OnInit {
             style: 'currency',
             currency: 'BRL'
         }).format(valor);
+    }
+
+    private getPeriodoPorDataVencimento(dataVencimento: string): number {
+        const [ano, mes] = dataVencimento.split('-');
+
+        return Number(`${ano}${mes}`);
     }
 
     carregarCategorias(): void {
