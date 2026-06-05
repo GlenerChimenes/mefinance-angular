@@ -24,6 +24,11 @@ import { SessionTimeoutService } from '../core/services/session-timeout.service'
                 <a routerLink="/gastos" routerLinkActive="active">Gastos</a>
                 <a routerLink="/ver-gastos" routerLinkActive="active">Ver gastos</a>
                 <a routerLink="/replicar-gastos" routerLinkActive="active">Replicar gastos</a>
+                @if (isAdmin()) {
+                    <a routerLink="/ultimos-acessos" routerLinkActive="active">
+                        Últimos acessos
+                    </a>
+                }
             </nav>
 
             <button class="btn btn-secondary" (click)="logout()">Sair</button>
@@ -31,6 +36,10 @@ import { SessionTimeoutService } from '../core/services/session-timeout.service'
 
         <main class="main">
             <router-outlet />
+
+            <footer class="app-footer">
+                {{ anoAtual }} Glener Chimenes. Todos os direitos reservados.
+            </footer>
         </main>
         @if (session.showWarning()) {
             <div class="session-backdrop">
@@ -57,6 +66,30 @@ import { SessionTimeoutService } from '../core/services/session-timeout.service'
         min-height: 100vh;
         display: grid;
         grid-template-columns: 280px 1fr;
+      }
+
+      .app-footer {
+        margin: 48px auto 0;
+        padding: 24px 16px;
+        width: min(1120px, calc(100% - 32px));
+        text-align: center;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+        border-top: 1px solid rgba(226, 232, 240, .9);
+      }
+
+      .app-footer::before {
+        content: "©";
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        margin-right: 6px;
+        border-radius: 8px;
+        background: #eef2ff;
+        color: #3730a3;
+        font-weight: 900;
       }
 
       .sidebar {
@@ -229,6 +262,8 @@ export class ShellComponent implements OnInit, OnDestroy {
     username = this.formatUsername(this.tokenService.getUsername());
     initials = this.getInitials(this.username);
 
+    anoAtual = new Date().getFullYear();
+
     ngOnInit(): void {
         this.sessionTimeoutService.start();
     }
@@ -257,6 +292,10 @@ export class ShellComponent implements OnInit, OnDestroy {
         }
 
         return username;
+    }
+
+    isAdmin(): boolean {
+        return this.tokenService.isAdmin();
     }
 
     private getInitials(name: string): string {

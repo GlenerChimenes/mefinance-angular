@@ -80,6 +80,14 @@ export class TokenService {
         return payload.username ?? payload.sub ?? null;
     }
 
+    hasAuthority(authority: string): boolean {
+        return this.getAuthorities().includes(authority);
+    }
+
+    isAdmin(): boolean {
+        return this.hasAuthority('ROLE_ADMIN');
+    }
+
     getAuthorities(): string[] {
         const payload = this.getPayload();
 

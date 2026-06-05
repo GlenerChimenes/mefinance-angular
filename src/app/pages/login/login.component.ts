@@ -12,11 +12,11 @@ import { AuthService } from '../../core/services/auth.service';
       <div class="hero">
         <span class="pill">MeFinance</span>
         <h1>Controle seus gastos com uma experiência moderna.</h1>
-        <p>Dashboard, resumo financeiro, cadastro e acompanhamento de gastos integrados ao seu backend Spring Boot.</p>
+        <p>Dashboard, resumo financeiro, cadastro e acompanhamento de gastos.</p>
       </div>
       <form class="card login-card" [formGroup]="form" (ngSubmit)="submit()">
         <h2>Entrar</h2>
-        <p>Acesse usando o usuário cadastrado na API.</p>
+        <p>Acesse usando o usuário cadastrado.</p>
         @if (error) { <div class="error">{{ error }}</div> }
         <div class="field"><label>E-mail ou usuário</label><input formControlName="username" autocomplete="username" placeholder="seu@email.com"></div>
         <div class="field"><label>Senha</label><input formControlName="password" type="password" autocomplete="current-password" placeholder="••••••••"></div>

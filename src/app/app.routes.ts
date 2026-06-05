@@ -7,6 +7,8 @@ import { ExpensesComponent } from './pages/expenses/expenses.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { ExpenseSearchComponent } from './pages/expense-search/expense-search.component';
 import { ReplicateExpensesComponent } from './pages/replicate-expenses/replicate-expenses.component';
+import { AccessLogsComponent } from './pages/access-logs/access-logs.component';
+import { adminGuard } from './core/services/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -20,7 +22,12 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'gastos', component: ExpensesComponent },
       { path: 'ver-gastos', component: ExpenseSearchComponent },
-      { path: 'replicar-gastos', component: ReplicateExpensesComponent }
+      { path: 'replicar-gastos', component: ReplicateExpensesComponent },
+      {
+            path: 'ultimos-acessos',
+            component: AccessLogsComponent,
+            canActivate: [adminGuard]
+      }
     ]
   },
   { path: '**', redirectTo: 'dashboard' }
