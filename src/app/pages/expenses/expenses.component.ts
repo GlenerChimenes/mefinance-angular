@@ -1,8 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
 import { Categoria, Gasto } from '../../core/models/gasto.models';
 import { GastoService } from '../../core/services/gasto.service';
 import { CategoriaService } from '../../core/services/categoria.service';
@@ -537,6 +536,7 @@ export class ExpensesComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly categoriaService = inject(CategoriaService);
     private readonly route = inject(ActivatedRoute);
+    private readonly router = inject(Router);
 
     categorias = signal<Categoria[]>([]);
     gastos = signal<Gasto[]>([]);
@@ -577,7 +577,12 @@ export class ExpensesComponent implements OnInit {
 
     ngOnInit(): void {
         this.carregarCategorias();
+        const navigation = this.router.getCurrentNavigation();
+        const gastoEditar = navigation?.extras?.state?.['gastoEditar'] as Gasto | undefined;
 
+        if (gastoEditar) {
+            this.gastoRecebidoParaEditar.set(gastoEditar);
+        }
         this.route.queryParamMap.subscribe(params => {
             const periodo = params.get('periodo');
 
@@ -596,6 +601,13 @@ export class ExpensesComponent implements OnInit {
                     : result?.content ?? [];
 
                 this.gastos.set(gastos);
+
+                const gastoParaEditar = this.gastoRecebidoParaEditar();
+
+                if (gastoParaEditar) {
+                    this.editar(gastoParaEditar);
+                    this.gastoRecebidoParaEditar.set(null);
+                }
             },
             error: error => {
                 console.error('Erro ao carregar gastos:', error);
@@ -732,6 +744,8 @@ export class ExpensesComponent implements OnInit {
             }
         });
     }
+
+    gastoRecebidoParaEditar = signal<Gasto | null>(null);
 
     estaPagando(gasto: Gasto): boolean {
         return !!gasto.id && this.idsPagando().includes(gasto.id);

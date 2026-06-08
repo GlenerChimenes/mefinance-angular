@@ -54,7 +54,7 @@ import { AccessLogService } from '../../core/services/access-log.service';
 
                 <span>{{ formatarDataHora(log.dataAcesso) }}</span>
 
-                <span>{{ log.ip || '-' }}</span>
+                  <span class="ip-cell" [title]="log.ip || '-'">{{ simplificarIp(log.ip) }}</span>
 
                 <span class="user-agent">{{ simplificarUserAgent(log.userAgent) }}</span>
               </div>
@@ -163,6 +163,13 @@ import { AccessLogService } from '../../core/services/access-log.service';
         font-size: 34px;
       }
     }
+    .ip-cell {
+      display: block;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   `]
 })
 export class AccessLogsComponent implements OnInit {
@@ -207,6 +214,18 @@ export class AccessLogsComponent implements OnInit {
             dateStyle: 'short',
             timeStyle: 'medium'
         }).format(date);
+    }
+
+    simplificarIp(ip?: string): string {
+        if (!ip) {
+            return '-';
+        }
+
+        if (ip.includes(':')) {
+            return ip.slice(0, 18) + '...';
+        }
+
+        return ip;
     }
 
     simplificarUserAgent(userAgent?: string): string {
