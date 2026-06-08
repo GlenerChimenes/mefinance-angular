@@ -24,6 +24,7 @@ import { SessionTimeoutService } from '../core/services/session-timeout.service'
                 <a routerLink="/gastos" routerLinkActive="active">Gastos</a>
                 <a routerLink="/ver-gastos" routerLinkActive="active">Ver gastos</a>
                 <a routerLink="/replicar-gastos" routerLinkActive="active">Replicar gastos</a>
+                <a routerLink="/analise-gastos" routerLinkActive="active">Análise de gastos</a>
                 @if (isAdmin()) {
                     <a routerLink="/ultimos-acessos" routerLinkActive="active">
                         Últimos acessos

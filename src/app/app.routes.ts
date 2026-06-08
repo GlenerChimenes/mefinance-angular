@@ -9,6 +9,7 @@ import { ExpenseSearchComponent } from './pages/expense-search/expense-search.co
 import { ReplicateExpensesComponent } from './pages/replicate-expenses/replicate-expenses.component';
 import { AccessLogsComponent } from './pages/access-logs/access-logs.component';
 import { adminGuard } from './core/services/admin.guard';
+import { ExpenseAnalysisComponent } from './pages/expense-analysis/expense-analysis.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -23,6 +24,7 @@ export const routes: Routes = [
       { path: 'gastos', component: ExpensesComponent },
       { path: 'ver-gastos', component: ExpenseSearchComponent },
       { path: 'replicar-gastos', component: ReplicateExpensesComponent },
+      { path: 'analise-gastos', component: ExpenseAnalysisComponent },
       {
             path: 'ultimos-acessos',
             component: AccessLogsComponent,
