@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://infectious-patrick-boats-particular.trycloudflare.com',
+  apiUrl: 'http://localhost:8080',
   oauthTokenPath: '/oauth2/token',
   oauthClientId: 'myclientid',
   oauthClientSecret: 'myclientsecret'
